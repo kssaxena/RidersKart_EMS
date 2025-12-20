@@ -1,86 +1,96 @@
-import React, { useState } from "react";
-import InputBox from "../InputBox";
-import Button from "../Button";
+import React, { useRef } from "react";
+import Button from "../../components/Button";
+import { useNavigate } from "react-router-dom";
+import LoadingUI from "../../components/LoadingUI";
+import { FetchData } from "../../utils/FetchFromApi";
+import { parseErrorMessage } from "../../utils/ErrorMessageParser";
 
-const RegisterEmployee = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+const EmployeeRegistrationForm = ({ startLoading, stopLoading }) => {
+  const formRef = useRef();
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleRegister = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register Data:", formData);
-    // API call here
+    const formData = new FormData(formRef.current);
+
+    try {
+      startLoading();
+      const response = await FetchData(
+        "/head/register-employee",
+        "post",
+        Object.fromEntries(formData),
+        true
+      );
+
+      if (response.data.success) {
+        alert("Employee registered successfully");
+        navigate(-1);
+      }
+    } catch (error) {
+      alert(parseErrorMessage(error?.response?.data));
+    } finally {
+      stopLoading();
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-100">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          Create Account
+    <div className="bg-gray-100 flex items-center justify-center lg:py-24 pt-24 pb-10">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-xl shadow-md w-full max-w-3xl"
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          Register Employee
         </h2>
 
-        <form onSubmit={handleRegister} className="space-y-2">
-          <InputBox
-            LabelName="Full Name"
-            Name="name"
-            Placeholder="Enter your name"
-            Value={formData.name}
-            onChange={handleChange}
-          />
-
-          <InputBox
-            LabelName="Email"
-            Name="email"
-            Type="email"
-            Placeholder="Enter your email"
-            Value={formData.email}
-            onChange={handleChange}
-          />
-
-          <InputBox
-            LabelName="Password"
-            Name="password"
-            Type="password"
-            Placeholder="Create password"
-            Value={formData.password}
-            onChange={handleChange}
-          />
-
-          <InputBox
-            LabelName="Confirm Password"
-            Name="confirmPassword"
-            Type="password"
-            Placeholder="Confirm password"
-            Value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-
-          <div className="pt-4 flex justify-center">
-            <Button
-              type="submit"
-              label="Register"
-              className="w-full py-3 text-lg"
-            />
+        <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
+          <div className="flex-1">
+            <label className="block mb-1 text-sm font-medium">Name</label>
+            <input name="name" required className="input" />
           </div>
-        </form>
 
-        <p className="text-sm text-center text-gray-500 mt-4">
-          Already have an account?{" "}
-          <span className="text-[#DF3F33] cursor-pointer hover:underline">
-            Login
-          </span>
-        </p>
-      </div>
+          <div className="flex-1">
+            <label className="block mb-1 text-sm font-medium">
+              Employee ID
+            </label>
+            <input name="employeeId" required className="input" />
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
+          <div className="flex-1">
+            <label className="block mb-1 text-sm font-medium">
+              Designation
+            </label>
+            <input name="designation" required className="input" />
+          </div>
+
+          <div className="flex-1">
+            <label className="block mb-1 text-sm font-medium">Department</label>
+            <input name="department" required className="input" />
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
+          <div className="flex-1">
+            <label className="block mb-1 text-sm font-medium">Pin Code</label>
+            <input name="pincode" required maxLength={6} className="input" />
+          </div>
+        </div>
+
+        <div className="flex gap-6 justify-end">
+          <Button label="Register Employee" type="submit" />
+          <Button
+            label="Cancel"
+            type="button"
+            className="hover:bg-red-600"
+            onClick={() => navigate(-1)}
+          />
+        </div>
+      </form>
     </div>
   );
 };
 
-export default RegisterEmployee;
+export default LoadingUI(EmployeeRegistrationForm);

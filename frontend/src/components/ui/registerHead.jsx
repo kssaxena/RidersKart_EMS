@@ -1,86 +1,143 @@
-import React, { useState } from "react";
-import InputBox from "../InputBox";
-import Button from "../Button";
+import React, { useRef, useState } from "react";
+import Button from "../../components/Button";
+import { useNavigate } from "react-router-dom";
+import LoadingUI from "../../components/LoadingUI";
+import { FetchData } from "../../utils/FetchFromApi";
+import { parseErrorMessage } from "../../utils/ErrorMessageParser";
+import { IoEye, IoMdEyeOff } from "react-icons/io5";
 
-const RegisterHead = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
+  const navigate = useNavigate();
+  const formRef = useRef();
+  const [showPassword, setShowPassword] = useState("password");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleRegister = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register Data:", formData);
-    // API call here
+    const formData = new FormData(formRef.current);
+
+    try {
+      startLoading();
+
+      const response = await FetchData(
+        "/admin/register-head",
+        "post",
+        Object.fromEntries(formData),
+        true
+      );
+
+      if (response.data.success) {
+        alert("Head registered successfully");
+        navigate("/admin/dashboard");
+      }
+    } catch (error) {
+      alert(parseErrorMessage(error?.response?.data));
+    } finally {
+      stopLoading();
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-100">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          Create Account
+    <div className="bg-gray-100 flex items-center justify-center lg:py-24 pt-24 pb-10">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-xl shadow-md w-full max-w-3xl"
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          Register Head (HR / Manager)
         </h2>
 
-        <form onSubmit={handleRegister} className="space-y-2">
-          <InputBox
-            LabelName="Full Name"
-            Name="name"
-            Placeholder="Enter your name"
-            Value={formData.name}
-            onChange={handleChange}
-          />
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            Personal Details
+          </h3>
 
-          <InputBox
-            LabelName="Email"
-            Name="email"
-            Type="email"
-            Placeholder="Enter your email"
-            Value={formData.email}
-            onChange={handleChange}
-          />
+          <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">Name</label>
+              <input name="name" required className="input" />
+            </div>
 
-          <InputBox
-            LabelName="Password"
-            Name="password"
-            Type="password"
-            Placeholder="Create password"
-            Value={formData.password}
-            onChange={handleChange}
-          />
-
-          <InputBox
-            LabelName="Confirm Password"
-            Name="confirmPassword"
-            Type="password"
-            Placeholder="Confirm password"
-            Value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-
-          <div className="pt-4 flex justify-center">
-            <Button
-              type="submit"
-              label="Register"
-              className="w-full py-3 text-lg"
-            />
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">
+                Employee ID
+              </label>
+              <input name="employeeId" required className="input" />
+            </div>
           </div>
-        </form>
 
-        <p className="text-sm text-center text-gray-500 mt-4">
-          Already have an account?{" "}
-          <span className="text-[#DF3F33] cursor-pointer hover:underline">
-            Login
-          </span>
-        </p>
-      </div>
+          <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">Email</label>
+              <input type="email" name="email" required className="input" />
+            </div>
+
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">
+                Contact Number
+              </label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                required
+                maxLength={10}
+                className="input"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">
+                Designation
+              </label>
+              <input name="designation" required className="input" />
+            </div>
+
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">
+                Department
+              </label>
+              <input name="department" required className="input" />
+            </div>
+          </div>
+
+          <div className="relative">
+            <label className="block mb-1 text-sm font-medium">Password</label>
+            <input
+              type={showPassword}
+              name="password"
+              required
+              className="input"
+            />
+            <div className="absolute top-9 right-4">
+              {showPassword === "password" ? (
+                <IoMdEyeOff
+                  onClick={() => setShowPassword("text")}
+                  className="cursor-pointer"
+                />
+              ) : (
+                <IoEye
+                  onClick={() => setShowPassword("password")}
+                  className="cursor-pointer"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-6 justify-end">
+          <Button label="Register Head" type="submit" />
+          <Button
+            label="Cancel"
+            type="button"
+            className="hover:bg-red-600"
+            onClick={() => navigate(-1)}
+          />
+        </div>
+      </form>
     </div>
   );
 };
 
-export default RegisterHead;
+export default LoadingUI(HeadRegistrationForm);

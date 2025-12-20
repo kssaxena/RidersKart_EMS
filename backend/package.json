@@ -1,0 +1,27 @@
+{
+  "name": "riderskart-ems",
+  "version": "1.0.0",
+  "description": "this is ems system of riders kart",
+  "main": "src/index.js",
+  "type": "module",
+  "keywords": [
+    "backend"
+  ],
+  "license": "ISC",
+  "author": "kshitij",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.0.2",
+    "nodemon": "^3.1.11"
+  }
+}
