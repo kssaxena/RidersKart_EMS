@@ -4,7 +4,7 @@ import {
   registerHead,
   registerEmployeeByAdmin,
   getAdminDashboard,
-} from "../controllers/admin.controller.js";
+} from "../controllers/admin.controllers.js";
 import { VerifyAdmin } from "../middlewares/auth.middlewares.js";
 
 const router = Router();

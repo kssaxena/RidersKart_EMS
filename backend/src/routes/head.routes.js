@@ -3,7 +3,7 @@ import {
   loginHead,
   registerEmployeeByHead,
   getHeadDashboard,
-} from "../controllers/head.controller.js";
+} from "../controllers/head.controllers.js";
 import { VerifyHead } from "../middlewares/auth.middlewares.js";
 
 const router = Router();

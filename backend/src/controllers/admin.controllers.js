@@ -1,9 +1,9 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { Admin } from "../models/Admin.model.js";
-import { Head } from "../models/Head.model.js";
-import { Employee } from "../models/Employee.model.js";
+import { Admin } from "../models/admin.models.js";
+import { Head } from "../models/head.models.js";
+import { Employee } from "../models/employee.models.js";
 
 /* =======================
    ADMIN LOGIN
