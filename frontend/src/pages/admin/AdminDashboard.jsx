@@ -114,7 +114,7 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
     );
   };
 
-  return user ? (
+  return user && user?.role === "ADMIN" ? (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
       <div className="flex md:flex-row flex-col md:w-1/2 w-full justify-around md:items-center items-start shadow-2xl p-5 rounded-xl bg-neutral-200">

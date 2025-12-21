@@ -69,7 +69,7 @@ const EmployeeRegistrationForm = ({ startLoading, stopLoading }) => {
     }
   };
 
-  return (
+  return (user && user?.role === "ADMIN") || user?.role === "HEAD" ? (
     <form
       ref={formRef}
       onSubmit={handleSubmit}
@@ -121,6 +121,13 @@ const EmployeeRegistrationForm = ({ startLoading, stopLoading }) => {
         <Button label="Register Employee" type="submit" className="mt-4" />
       </div>
     </form>
+  ) : (
+    <div className="flex justify-center items-center w-full">
+      <h2 className="text-2xl font-bold text-center">
+        <p className="text-5xl ">⚠️</p>
+        Restricted Access !!
+      </h2>
+    </div>
   );
 };
 

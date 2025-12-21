@@ -4,28 +4,40 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Head } from "../models/head.models.js";
 import { Employee } from "../models/employee.models.js";
 import { generateAccessAndRefreshTokens } from "../utils/TokenGenerator.js";
+import Jwt from "jsonwebtoken";
 
 /* =======================
    HEAD LOGIN
 ======================= */
-const loginHead = asyncHandler(async (req, res, next) => {
+const loginHead = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password)
-    return next(new ApiError(400, "Email and password are required"));
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
 
   const head = await Head.findOne({ email });
-  if (!head) return next(new ApiError(401, "Invalid credentials"));
+  if (!head) throw new ApiError(401, "Invalid credentials");
 
   const isValid = await head.isPasswordCorrect(password);
-  if (!isValid) return next(new ApiError(401, "Invalid credentials"));
+  if (!isValid) throw new ApiError(401, "Invalid credentials");
 
-  const accessToken = head.generateAccessToken();
+  if (!head.isActive) {
+    throw new ApiError(401, "Account inactive");
+  }
 
-  res.status(200).json(
+  const { AccessToken, RefreshToken } = await generateAccessAndRefreshTokens(
+    head._id,
+    "HEAD"
+  );
+
+  return res.status(200).json(
     new ApiResponse(200, {
       head,
-      token: accessToken,
+      tokens: {
+        AccessToken,
+        RefreshToken,
+      },
     })
   );
 });
@@ -69,14 +81,18 @@ const registerEmployeeByHead = asyncHandler(async (req, res, next) => {
 const getHeadDashboard = asyncHandler(async (req, res) => {
   const head = await Head.findById(req.user._id).populate(
     "createdEmployees",
-    "name employeeId designation"
+    "name employeeId designation email"
   );
 
-  res.status(200).json(new ApiResponse(200, head));
+  const allEmployee = await Employee.find().select(
+    "name employeeId designation email"
+  );
+
+  res.status(200).json(new ApiResponse(200, { head, allEmployee }));
 });
 
 const regenerateHeadRefreshToken = asyncHandler(async (req, res) => {
-  const token = req.cookies?.RefreshToken || req.body.RefreshToken;
+  const token = req.body.RefreshToken;
 
   if (!token) throw new ApiError(401, "Unauthorized request");
 

@@ -240,6 +240,14 @@ const getAllHeads = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, heads));
 });
 
+const getAdminById = asyncHandler(async (req, res) => {
+  const { adminId } = req.params;
+  console.log("from controller", adminId);
+
+  const admin = await Admin.findById(adminId).select("name email");
+  res.status(200).json(new ApiResponse(200, admin));
+});
+
 export {
   loginAdmin,
   registerHead,
@@ -248,4 +256,5 @@ export {
   regenerateAdminRefreshToken,
   registerAdmin,
   getAllHeads,
+  getAdminById,
 };

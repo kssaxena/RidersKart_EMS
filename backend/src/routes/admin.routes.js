@@ -7,6 +7,7 @@ import {
   regenerateAdminRefreshToken,
   registerAdmin,
   getAllHeads,
+  getAdminById,
 } from "../controllers/admin.controllers.js";
 import { VerifyAdmin } from "../middlewares/auth.middlewares.js";
 
@@ -16,6 +17,7 @@ const router = Router();
 router.route("/register").post(registerAdmin);
 router.route("/login").post(loginAdmin);
 router.route("/get-all-heads").get(getAllHeads);
+router.route("/get-admin/:adminId").get(getAdminById);
 
 /* ========= ADMIN ONLY ========= */
 router.route("/dashboard").get(VerifyAdmin, getAdminDashboard);

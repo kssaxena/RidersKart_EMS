@@ -6,8 +6,7 @@ import LoadingUI from "../../components/LoadingUI";
 import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
 import { useDispatch } from "react-redux";
-import { addUser } from "../../redux/slices/authSlice";
-
+import { addUser, clearUser } from "../../redux/slices/authSlice";
 
 const HeadLogin = ({ startLoading, stopLoading }) => {
   const formRef = useRef();
@@ -21,16 +20,24 @@ const HeadLogin = ({ startLoading, stopLoading }) => {
 
     try {
       startLoading();
-      const res = await FetchData("/head/login", "post", formData, true);
-
+      const res = await FetchData("head/login", "post", formData);
       if (res.data.success) {
-        localStorage.setItem("AccessToken", res.data.data.token);
+        const { head, tokens } = res.data.data;
+        localStorage.clear();
+
+        localStorage.setItem("AccessToken", tokens.AccessToken);
+        localStorage.setItem("RefreshToken", tokens.RefreshToken);
+        localStorage.setItem("role", "HEAD");
+
+        dispatch(clearUser());
         dispatch(
           addUser({
-            user: res.data.data.user,
+            user: head,
             role: "HEAD",
           })
         );
+
+        navigate("/head/dashboard");
 
         localStorage.setItem("role", "HEAD");
         navigate("/head/dashboard");

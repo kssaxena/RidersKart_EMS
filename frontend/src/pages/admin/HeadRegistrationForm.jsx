@@ -5,9 +5,11 @@ import LoadingUI from "../../components/LoadingUI";
 import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
   const formRef = useRef();
+  const { user, role, isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
       const response = await FetchData(
         "admin/register-head",
         "post",
-        data,
+        data
         // true
       );
       console.log(response);
@@ -36,7 +38,7 @@ const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
     }
   };
 
-  return (
+  return user && user?.role === "ADMIN" ? (
     <form
       ref={formRef}
       onSubmit={handleSubmit}
@@ -71,6 +73,13 @@ const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
         <Button label="Register Head" type="submit" className="mt-4" />
       </div>
     </form>
+  ) : (
+    <div className="flex justify-center items-center w-full">
+      <h2 className="text-2xl font-bold text-center">
+        <p className="text-5xl ">⚠️</p>
+        Restricted Access !!
+      </h2>
+    </div>
   );
 };
 
