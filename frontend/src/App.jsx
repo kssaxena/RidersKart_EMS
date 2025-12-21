@@ -70,7 +70,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <div className="font-montserrat">
       <Header />
 
       {/* Top padding because header is fixed */}
@@ -95,7 +95,7 @@ function App() {
           />
 
           {/* ================= HEAD ================= */}
-          <Route path="/head/login" element={<HeadLogin />} />
+          {/* <Route path="/head/login" element={<HeadLogin />} /> */}
           <Route path="/head/dashboard" element={<HeadDashboard />} />
           <Route
             path="/head/register-employee"
@@ -106,7 +106,7 @@ function App() {
           <Route path="*" element={<Hero />} />
         </Routes>
       </div>
-    </>
+    </div>
   );
 }
 
