@@ -4,20 +4,32 @@ import InputBox from "../../components/InputBox";
 import LoadingUI from "../../components/LoadingUI";
 import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
+import { useNavigate } from "react-router-dom";
 
 const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
   const formRef = useRef();
-
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(formRef.current));
+    const data = new FormData(formRef.current);
+    for (let pair of data.entries()) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
 
     try {
       startLoading();
-      await FetchData("/admin/register-head", "post", data, true);
+      const response = await FetchData(
+        "admin/register-head",
+        "post",
+        data,
+        // true
+      );
+      console.log(response);
       alert("Head Registered Successfully");
+      navigate("/admin/dashboard");
       formRef.current.reset();
     } catch (err) {
+      console.log(err);
       alert(parseErrorMessage(err?.response?.data));
     } finally {
       stopLoading();
@@ -32,15 +44,32 @@ const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
     >
       <h2 className="text-xl font-bold mb-4">Register Head</h2>
 
-      <InputBox LabelName="Name" Name="name" required />
-      <InputBox LabelName="Employee ID" Name="employeeId" required />
-      <InputBox LabelName="Email" Name="email" Type="email" required />
-      <InputBox LabelName="Phone Number" Name="phoneNumber" required />
-      <InputBox LabelName="Designation" Name="designation" required />
-      <InputBox LabelName="Department" Name="department" required />
-      <InputBox LabelName="Password" Name="password" Type="password" required />
+      <div className="md:grid-cols-2  md:grid-rows-4 grid md:gap-2">
+        <InputBox LabelName="Name" Name="name" required />
+        <InputBox LabelName="Employee ID" Name="employeeId" required />
+        <InputBox LabelName="Designation" Name="designation" required />
+        <InputBox LabelName="Department" Name="department" required />
+        <InputBox LabelName="Email" Name="email" Type="email" required />
+        <InputBox LabelName="Phone Number" Name="phoneNumber" required />
+        <InputBox
+          LabelName="Password"
+          Name="password"
+          Type="password"
+          required
+        />
+        {/* <InputBox LabelName="Phone Number" Name="phoneNumber" required /> */}
+      </div>
 
-      <Button label="Register Head" type="submit" className="mt-4" />
+      <div className="flex justify-center items-center gap-5">
+        <Button
+          label="Cancel"
+          type="reset"
+          className="mt-4 bg-gray-300 text-black"
+          onClick={() => navigate("/admin/dashboard")}
+        />
+        <Button label="Reset" type="reset" className="mt-4" />
+        <Button label="Register Head" type="submit" className="mt-4" />
+      </div>
     </form>
   );
 };

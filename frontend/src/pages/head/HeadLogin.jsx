@@ -5,11 +5,15 @@ import InputBox from "../../components/InputBox";
 import LoadingUI from "../../components/LoadingUI";
 import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
+import { useDispatch } from "react-redux";
+import { addUser } from "../../redux/slices/authSlice";
+
 
 const HeadLogin = ({ startLoading, stopLoading }) => {
   const formRef = useRef();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +25,13 @@ const HeadLogin = ({ startLoading, stopLoading }) => {
 
       if (res.data.success) {
         localStorage.setItem("AccessToken", res.data.data.token);
+        dispatch(
+          addUser({
+            user: res.data.data.user,
+            role: "HEAD",
+          })
+        );
+
         localStorage.setItem("role", "HEAD");
         navigate("/head/dashboard");
       }
@@ -32,7 +43,7 @@ const HeadLogin = ({ startLoading, stopLoading }) => {
   };
 
   return (
-    <div className="min-h-[80vh] flex justify-center items-center">
+    <div className="flex justify-center items-center">
       <form
         ref={formRef}
         onSubmit={handleSubmit}

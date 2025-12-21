@@ -75,14 +75,17 @@ const adminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔐 Password Hash
-adminSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+/* =========================
+   HASH PASSWORD (CORRECT)
+========================= */
+adminSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
-// 🔑 Compare password
+/* =========================
+   PASSWORD CHECK
+========================= */
 adminSchema.methods.isPasswordCorrect = async function (password) {
   return bcrypt.compare(password, this.password);
 };
@@ -94,6 +97,11 @@ adminSchema.methods.generateAccessToken = function () {
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
   );
+};
+adminSchema.methods.generateRefreshToken = function () {
+  return Jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+  });
 };
 
 export const Admin = mongoose.model("Admin", adminSchema);

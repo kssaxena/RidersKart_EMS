@@ -5,26 +5,44 @@ import InputBox from "../../components/InputBox";
 import LoadingUI from "../../components/LoadingUI";
 import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
+import { useDispatch } from "react-redux";
+import { addUser, clearUser } from "../../redux/slices/authSlice";
 
 const AdminLogin = ({ startLoading, stopLoading }) => {
   const formRef = useRef();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = Object.fromEntries(new FormData(formRef.current));
-
+    const formData = new FormData(formRef.current);
+    // for (let pair of formData.entries()) {
+    //   console.log(pair[0] + ": " + pair[1]);
+    // }
     try {
       startLoading();
-      const res = await FetchData("/admin/login", "post", formData, true);
-
+      const res = await FetchData("admin/login", "post", formData);
+      console.log(res);
       if (res.data.success) {
-        localStorage.setItem("AccessToken", res.data.data.token);
+        const { admin, tokens } = res.data.data;
+
+        localStorage.setItem("AccessToken", tokens.AccessToken);
+        localStorage.setItem("RefreshToken", tokens.RefreshToken);
         localStorage.setItem("role", "ADMIN");
+
+        dispatch(clearUser());
+        dispatch(
+          addUser({
+            user: admin,
+            role: "ADMIN",
+          })
+        );
+
         navigate("/admin/dashboard");
       }
     } catch (err) {
+      console.log(err);
       setError(parseErrorMessage(err?.response?.data));
     } finally {
       stopLoading();
@@ -32,7 +50,7 @@ const AdminLogin = ({ startLoading, stopLoading }) => {
   };
 
   return (
-    <div className="min-h-[80vh] flex justify-center items-center">
+    <div className="flex justify-center items-center">
       <form
         ref={formRef}
         onSubmit={handleSubmit}
@@ -43,7 +61,12 @@ const AdminLogin = ({ startLoading, stopLoading }) => {
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
         <InputBox LabelName="Email" Name="email" Type="email" required />
-        <InputBox LabelName="Password" Name="password" Type="password" required />
+        <InputBox
+          LabelName="Password"
+          Name="password"
+          Type="password"
+          required
+        />
 
         <Button label="Login" type="submit" className="w-full mt-4" />
       </form>

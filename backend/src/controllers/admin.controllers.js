@@ -4,28 +4,96 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Admin } from "../models/admin.models.js";
 import { Head } from "../models/head.models.js";
 import { Employee } from "../models/employee.models.js";
+import { generateAccessAndRefreshTokens } from "../utils/TokenGenerator.js";
+import Jwt from "jsonwebtoken";
 
+const regenerateAdminRefreshToken = asyncHandler(async (req, res) => {
+  const token = req.body.RefreshToken;
+
+  if (!token) throw new ApiError(401, "Unauthorized request");
+
+  const decoded = Jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+
+  const admin = await Admin.findById(decoded._id).select("-password");
+  if (!admin) throw new ApiError(401, "Invalid refresh token");
+
+  const { AccessToken, RefreshToken } = await generateAccessAndRefreshTokens(
+    admin._id,
+    "ADMIN"
+  );
+
+  return res.status(201).json(
+    new ApiResponse(201, {
+      user: admin,
+      tokens: { AccessToken, RefreshToken },
+    })
+  );
+});
+
+const registerAdmin = asyncHandler(async (req, res, next) => {
+  const { name, employeeId, email, phoneNumber, password } = req.body;
+  // console.log(name, employeeId, email, phoneNumber, password);
+
+  // Validation
+  if (!name || !employeeId || !email || !phoneNumber || !password) {
+    return next(new ApiError(400, "All fields are required"));
+  }
+
+  // Check existing admin
+  const existingAdmin = await Admin.findOne({
+    $or: [{ email }, { employeeId }],
+  });
+
+  if (existingAdmin) {
+    return next(
+      new ApiError(400, "Admin with same email or employeeId already exists")
+    );
+  }
+
+  // Create admin
+  const admin = await Admin.create({
+    name,
+    employeeId,
+    email,
+    phoneNumber,
+    password, // hashed by pre-save hook
+  });
+
+  // Remove sensitive fields
+  const adminData = await Admin.findById(admin._id).select("-password");
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, adminData, "Admin registered successfully"));
+});
 /* =======================
    ADMIN LOGIN
 ======================= */
-const loginAdmin = asyncHandler(async (req, res, next) => {
+const loginAdmin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password)
-    return next(new ApiError(400, "Email and password are required"));
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
 
   const admin = await Admin.findOne({ email });
-  if (!admin) return next(new ApiError(401, "Invalid credentials"));
+  if (!admin) throw new ApiError(401, "Invalid credentials");
 
   const isValid = await admin.isPasswordCorrect(password);
-  if (!isValid) return next(new ApiError(401, "Invalid credentials"));
+  if (!isValid) throw new ApiError(401, "Invalid credentials");
 
-  const accessToken = admin.generateAccessToken();
+  const { AccessToken, RefreshToken } = await generateAccessAndRefreshTokens(
+    admin._id,
+    "ADMIN"
+  );
 
-  res.status(200).json(
+  return res.status(200).json(
     new ApiResponse(200, {
       admin,
-      token: accessToken,
+      tokens: {
+        AccessToken,
+        RefreshToken,
+      },
     })
   );
 });
@@ -35,7 +103,7 @@ const loginAdmin = asyncHandler(async (req, res, next) => {
 ======================= */
 const registerHead = asyncHandler(async (req, res, next) => {
   const adminId = req.user._id;
-
+  console.log("controller reached");
   const {
     name,
     employeeId,
@@ -45,6 +113,16 @@ const registerHead = asyncHandler(async (req, res, next) => {
     department,
     password,
   } = req.body;
+
+  console.log(
+    name,
+    employeeId,
+    email,
+    phoneNumber,
+    designation,
+    department,
+    password
+  );
 
   if (
     !name ||
@@ -94,8 +172,11 @@ const registerEmployeeByAdmin = asyncHandler(async (req, res, next) => {
     employeeId,
     designation,
     department,
+    phoneNumber,
+    officeLocation,
     pincode,
     reportingAuthority,
+    email,
   } = req.body;
 
   if (
@@ -103,8 +184,11 @@ const registerEmployeeByAdmin = asyncHandler(async (req, res, next) => {
     !employeeId ||
     !designation ||
     !department ||
+    !phoneNumber ||
+    !officeLocation ||
     !pincode ||
-    !reportingAuthority
+    !reportingAuthority ||
+    !email
   ) {
     return next(new ApiError(400, "All fields are required"));
   }
@@ -114,6 +198,9 @@ const registerEmployeeByAdmin = asyncHandler(async (req, res, next) => {
     employeeId,
     designation,
     department,
+    phoneNumber,
+    email,
+    officeLocation,
     pincode,
     reportingAuthority,
     createdBy: "ADMIN",
@@ -135,10 +222,30 @@ const registerEmployeeByAdmin = asyncHandler(async (req, res, next) => {
 ======================= */
 const getAdminDashboard = asyncHandler(async (req, res) => {
   const admin = await Admin.findById(req.user._id)
-    .populate("createdHeads", "name employeeId designation")
-    .populate("createdEmployees", "name employeeId designation");
+    .populate("createdHeads", "name employeeId designation email")
+    .populate("createdEmployees", "name employeeId designation email");
+  // .populate("createdEmployees", "name employeeId designation");
 
-  res.status(200).json(new ApiResponse(200, admin));
+  const allHead = await Head.find().select("name employeeId designation email");
+  const allEmployee = await Employee.find().select(
+    "name employeeId designation email"
+  );
+
+  res.status(200).json(new ApiResponse(200, { admin, allHead, allEmployee }));
 });
 
-export { loginAdmin, registerHead, registerEmployeeByAdmin, getAdminDashboard };
+const getAllHeads = asyncHandler(async (req, res) => {
+  const heads = await Head.find().select("name employeeId phoneNumber");
+
+  res.status(200).json(new ApiResponse(200, heads));
+});
+
+export {
+  loginAdmin,
+  registerHead,
+  registerEmployeeByAdmin,
+  getAdminDashboard,
+  regenerateAdminRefreshToken,
+  registerAdmin,
+  getAllHeads,
+};
