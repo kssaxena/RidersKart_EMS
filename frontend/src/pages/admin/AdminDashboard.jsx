@@ -21,7 +21,6 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
       try {
         startLoading();
         const res = await FetchData("admin/dashboard", "get", null, true);
-        console.log(res);
         setData(res.data.data.admin);
         setHeadData(res.data.data.admin.createdHeads);
         setEmployeeData(res.data.data.admin.createdEmployees);
@@ -37,6 +36,7 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
   const logout = () => {
     localStorage.clear();
     dispatch(clearUser());
+    alert("You are logged out successfully");
     navigate("/");
   };
 
@@ -128,6 +128,7 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
         <div className="flex flex-col justify-center items-start gap-5">
           {commands.map((item, index) => (
             <Button
+              key={index}
               label={item.label}
               className={"w-full"}
               onClick={() => navigate(item.path)}

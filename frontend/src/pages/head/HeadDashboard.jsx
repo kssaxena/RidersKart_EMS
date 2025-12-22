@@ -4,13 +4,15 @@ import LoadingUI from "../../components/LoadingUI";
 import Button from "../../components/Button";
 import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUser } from "../../redux/slices/authSlice";
 
 const HeadDashboard = ({ startLoading, stopLoading }) => {
   const { user, role, isAuthenticated } = useSelector((state) => state.auth);
   const [headData, setHeadData] = useState(null);
   const [admin, setAdmin] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [employeeData, setEmployeeData] = useState([]);
   const [allEmployeeData, setAllEmployeeData] = useState([]);
   const fetchDashboard = async () => {
@@ -47,6 +49,7 @@ const HeadDashboard = ({ startLoading, stopLoading }) => {
   const logout = () => {
     localStorage.clear();
     dispatch(clearUser());
+    alert("You are logged out successfully");
     navigate("/");
   };
 

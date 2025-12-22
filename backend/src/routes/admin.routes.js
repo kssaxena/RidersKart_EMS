@@ -14,7 +14,7 @@ import { VerifyAdmin } from "../middlewares/auth.middlewares.js";
 const router = Router();
 
 /* ========= AUTH ========= */
-router.route("/register").post(registerAdmin);
+router.route("/register/:adminId").post(registerAdmin);
 router.route("/login").post(loginAdmin);
 router.route("/get-all-heads").get(getAllHeads);
 router.route("/get-admin/:adminId").get(getAdminById);

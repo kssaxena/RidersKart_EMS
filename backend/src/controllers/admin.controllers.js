@@ -32,6 +32,14 @@ const regenerateAdminRefreshToken = asyncHandler(async (req, res) => {
 
 const registerAdmin = asyncHandler(async (req, res, next) => {
   const { name, employeeId, email, phoneNumber, password } = req.body;
+  const { adminId } = req.params;
+  if (!adminId) {
+    return new ApiError(400, "Invalid admin");
+  }
+  const validId = await Admin.findById(adminId);
+  if (!validId) {
+    return new ApiError(400, "Invalid admin");
+  }
   // console.log(name, employeeId, email, phoneNumber, password);
 
   // Validation

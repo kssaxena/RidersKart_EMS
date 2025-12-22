@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addUser, clearUser, stopAuthLoading } from "./redux/slices/authSlice";
 import { FetchData } from "./utils/FetchFromApi";
 import { useEffect } from "react";
+import AdminRegistrationForm from "./pages/admin/AdminRegistrationForm";
 
 /* Route Guards (you will add later) */
 // import { AdminRoute, HeadRoute } from "./utils/ProtectedRoutes";
@@ -83,7 +84,10 @@ function App() {
           <Route path="/employees/:id" element={<EmployeeDetails />} />
 
           {/* ================= ADMIN ================= */}
-          {/* <Route path="/admin/login" element={<AdminLogin />} /> */}
+          <Route
+            path="/admin/register-admin"
+            element={<AdminRegistrationForm />}
+          />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route
             path="/admin/register-head"

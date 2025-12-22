@@ -23,7 +23,6 @@ const AdminLogin = ({ startLoading, stopLoading }) => {
     try {
       startLoading();
       const res = await FetchData("admin/login", "post", formData);
-      console.log(res);
       if (res.data.success) {
         const { admin, tokens } = res.data.data;
 
