@@ -49,7 +49,7 @@ const EmployeeSearch = () => {
     searchEmployees();
   };
 
-  console.log(results);
+  // console.log(results);
 
   const ResultDataTableUI = ({ Text = "", TableData }) => {
     const TableHeaders = [
@@ -126,6 +126,61 @@ const EmployeeSearch = () => {
     );
   };
 
+  const Cards = ({ CardData }) => {
+    return (
+      <div className="flex flex-col justify-center items-center w-full gap-5">
+        {CardData?.length > 0
+          ? CardData?.map((data, key) => (
+              <Link className="flex justify-between items-center w-full shadow-2xl bg-neutral-100 rounded-xl p-5 text-sm">
+                <div className="flex flex-col justify-start items-start w-1/2">
+                  <h1 className="text-center font-semibold text-red-500">
+                    <strong>Employee ID</strong> {data?.employeeId}
+                  </h1>
+                  <h1 className=" font-semibold">
+                    <strong>Name</strong> {data?.name}
+                  </h1>
+                  <h1>
+                    <strong>Reporting authority</strong>{" "}
+                    {data?.reportingAuthority?.name} |{" "}
+                    {data?.reportingAuthority?.employeeId}
+                  </h1>
+                  <h1 className="flex justify-start items-center gap-2">
+                    <strong>Email</strong> {data?.email}
+                  </h1>
+                </div>
+                <div className="flex flex-col justify-start items-start w-1/2">
+                  <h1>
+                    <strong>Designation</strong> {data?.designation}
+                  </h1>
+                  <h1>
+                    <strong>Location</strong> {data.officeLocation} |{" "}
+                    {data?.pincode}
+                  </h1>
+                  <h1 className="flex justify-start items-center gap-2">
+                    <strong>Contact number</strong> {data?.phoneNumber}
+                  </h1>
+                  <h1>
+                    <strong>Department</strong> {data?.department}
+                  </h1>
+                  <h1 className="text-center font-semibold">
+                    {data?.isActive === true ? (
+                      <p className="text-green-600 bg-green-200 text-center px-2 py-1">
+                        ONLINE
+                      </p>
+                    ) : (
+                      <p className="text-red-600 bg-red-200 text-center">
+                        OFFLINE
+                      </p>
+                    )}
+                  </h1>
+                </div>
+              </Link>
+            ))
+          : "No Data Available"}
+      </div>
+    );
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-6">Search Employees</h2>
@@ -144,7 +199,8 @@ const EmployeeSearch = () => {
       {/* Loading */}
       {loading && <p className="mt-4 text-gray-500">Searching employees...</p>}
       <h2 className="font-bold mb-6">Search results</h2>
-      <ResultDataTableUI TableData={results} />
+      {/* <ResultDataTableUI TableData={results} /> */}
+      <Cards CardData={results} />
     </div>
   );
 };

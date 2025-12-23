@@ -24,7 +24,7 @@ const searchEmployees = asyncHandler(async (req, res) => {
 
   /**
    * Build OR conditions for each keyword
-   * Each keyword can match multiple fields
+   * (only for direct employee fields)
    */
   const orConditions = keywords.flatMap((word) => [
     { name: { $regex: word, $options: "i" } },
@@ -33,15 +33,23 @@ const searchEmployees = asyncHandler(async (req, res) => {
     { designation: { $regex: word, $options: "i" } },
     { email: { $regex: word, $options: "i" } },
     { phoneNumber: { $regex: word, $options: "i" } },
+    { officeLocation: { $regex: word, $options: "i" } },
+    { pincode: { $regex: word, $options: "i" } },
   ]);
 
   const employees = await Employee.find({
     $or: orConditions,
   })
-    .select("name employeeId designation department email phoneNumber isActive")
+    // ✅ populate reporting authority
+    .populate({
+      path: "reportingAuthority",
+      select: "name employeeId",
+    })
+    // ✅ select all required employee fields
+    .select(
+      "name employeeId designation department email phoneNumber isActive officeLocation pincode reportingAuthority"
+    )
     .limit(50); // safety limit
-
-  console.log("From Controller", employees);
 
   return res
     .status(200)
@@ -53,6 +61,7 @@ const searchEmployees = asyncHandler(async (req, res) => {
       )
     );
 });
+
 
 /* =======================
    EMPLOYEE DETAILS (PUBLIC)
