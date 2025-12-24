@@ -59,7 +59,7 @@ const employeeSchema = new mongoose.Schema(
     createdById: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      refPath: "createdBy",
+      ref: "Admin",
     },
 
     isActive: {

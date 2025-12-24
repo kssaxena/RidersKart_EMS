@@ -1,20 +1,10 @@
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/header";
-
-/* Public Pages */
 import Hero from "./pages/hero/hero";
-
-/* Admin Pages */
-import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import HeadRegistrationForm from "./pages/admin/HeadRegistrationForm";
 import EmployeeRegistrationForm from "./pages/admin/EmployeeRegistrationForm";
-
-/* Head Pages */
-import HeadLogin from "./pages/head/HeadLogin";
 import HeadDashboard from "./pages/head/HeadDashboard";
-
-/* Public Employee Pages */
 import EmployeeSearch from "./pages/employee/EmployeeSearch";
 import EmployeeDetails from "./pages/employee/EmployeeDetails";
 import Login from "./pages/authentication/login";
@@ -24,12 +14,8 @@ import { FetchData } from "./utils/FetchFromApi";
 import { useEffect } from "react";
 import AdminRegistrationForm from "./pages/admin/AdminRegistrationForm";
 
-/* Route Guards (you will add later) */
-// import { AdminRoute, HeadRoute } from "./utils/ProtectedRoutes";
-
 function App() {
   const { user, role, isAuthenticated } = useSelector((state) => state.auth);
-  // console.log(user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -59,11 +45,11 @@ function App() {
           })
         );
       } catch (error) {
-        console.log("Relogin failed:", error);
+        // console.log("Re-login failed:", error);
         localStorage.clear();
         dispatch(clearUser());
       } finally {
-        dispatch(stopAuthLoading()); // 👈 CRITICAL
+        dispatch(stopAuthLoading());
       }
     }
 
@@ -81,7 +67,10 @@ function App() {
           <Route path="/" element={<Hero />} />
           <Route path="/login" element={<Login />} />
           <Route path="/employees/:searchData" element={<EmployeeSearch />} />
-          <Route path="/employees/:id" element={<EmployeeDetails />} />
+          <Route
+            path="/employees/current-employee/:employeeId"
+            element={<EmployeeDetails />}
+          />
 
           {/* ================= ADMIN ================= */}
           <Route

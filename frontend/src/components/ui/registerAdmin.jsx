@@ -16,7 +16,7 @@ const RegisterHead = () => {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    console.log("Register Data:", formData);
+    // console.log("Register Data:", formData);
     // API call here
   };
 

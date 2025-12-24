@@ -41,7 +41,7 @@ const AdminLogin = ({ startLoading, stopLoading }) => {
         navigate("/admin/dashboard");
       }
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       setError(parseErrorMessage(err?.response?.data));
     } finally {
       stopLoading();

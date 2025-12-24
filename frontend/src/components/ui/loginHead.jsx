@@ -14,7 +14,7 @@ const LoginHead = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
+    // console.log("Login Data:", formData);
     // API call here
   };
 

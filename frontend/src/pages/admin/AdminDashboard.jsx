@@ -15,7 +15,6 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
   const [allHeadData, setAllHeadData] = useState([]);
   const [employeeData, setEmployeeData] = useState([]);
   const [allEmployeeData, setAllEmployeeData] = useState([]);
-
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
@@ -56,7 +55,7 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
     { label: "Register new Employee", path: "/admin/register-employee" },
   ];
 
-  const HeadDataUI = ({ Text = "", TableData }) => {
+  const HeadDataUI = ({ Text = "", TableData, Role = "" }) => {
     const TableHeaders = ["Employee ID", "Name", "Email", "Designation"];
     return (
       <div className="mt-10">
@@ -83,15 +82,32 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
                     className="hover:bg-gray-50 transition-colors duration-200 border-b"
                   >
                     <td className="px-5 py-3 text-red-500 font-medium">
-                      <Link
-                        to={`/current-data/${data._id}`}
+                      {Role === "HEAD" ? (
+                        <h1 className="hover:underline">{data?.employeeId}</h1>
+                      ) : (
+                        // <Link
+                        //   to={`/employees/current-head/${data._id}`}
+                        //   className="hover:underline"
+                        // >
+                        //   {data?.employeeId}
+                        // </Link>
+                        <Link
+                          to={`/employees/current-employee/${data._id}`}
+                          className="hover:underline text-blue-500"
+                        >
+                          {data?.employeeId}
+                        </Link>
+                      )}
+                      {/* <Link
+                        to={`/employees/current-employee/${data._id}`}
                         className="hover:underline"
                       >
                         {data?.employeeId}
-                      </Link>
+                      </Link> */}
                     </td>
                     <td className="px-5 py-3 text-gray-700">{data?.name}</td>
                     <td className="px-5 py-3 text-gray-700">{data?.email}</td>
+                    {/* <td className="px-5 py-3 text-gray-700">{data?.role}</td> */}
                     <td className="px-5 py-3 text-gray-700">
                       {data?.designation}
                     </td>
@@ -141,8 +157,8 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
           />
         </div>
       </div>
-      <HeadDataUI TableData={headData} Text="Your created HODs" />
-      <HeadDataUI TableData={allHeadData} Text="All HODs" />
+      <HeadDataUI TableData={headData} Text="Your created HODs" Role="HEAD" />
+      <HeadDataUI TableData={allHeadData} Text="All HODs" Role="HEAD" />
       <HeadDataUI TableData={employeeData} Text="Your created employees" />
       <HeadDataUI TableData={allEmployeeData} Text="All employees" />
     </div>

@@ -62,19 +62,22 @@ const searchEmployees = asyncHandler(async (req, res) => {
     );
 });
 
-
 /* =======================
    EMPLOYEE DETAILS (PUBLIC)
 ======================= */
-const getEmployeeDetails = asyncHandler(async (req, res, next) => {
-  const employee = await Employee.findById(req.params.id).populate(
-    "reportingAuthority",
-    "name designation"
-  );
+const getEmployeeDetails = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const employee = await Employee.findById(id)
+    .populate(
+      "reportingAuthority",
+      "name phoneNumber designation email employeeId"
+    )
+    .populate("createdById", "name phoneNumber designation email employeeId");
+  if (!employee) throw new ApiError(404, "Employee not found");
 
-  if (!employee) return next(new ApiError(404, "Employee not found"));
-
-  res.status(200).json(new ApiResponse(200, employee));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, employee, "Employee fetched successfully"));
 });
 
 export { searchEmployees, getEmployeeDetails };

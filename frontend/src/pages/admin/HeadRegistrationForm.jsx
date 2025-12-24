@@ -14,9 +14,9 @@ const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(formRef.current);
-    for (let pair of data.entries()) {
-      console.log(pair[0] + ": " + pair[1]);
-    }
+    // for (let pair of data.entries()) {
+    //   console.log(pair[0] + ": " + pair[1]);
+    // }
 
     try {
       startLoading();
@@ -26,12 +26,12 @@ const HeadRegistrationForm = ({ startLoading, stopLoading }) => {
         data
         // true
       );
-      console.log(response);
+      // console.log(response);
       alert("Head Registered Successfully");
       navigate("/admin/dashboard");
       formRef.current.reset();
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       alert(parseErrorMessage(err?.response?.data));
     } finally {
       stopLoading();

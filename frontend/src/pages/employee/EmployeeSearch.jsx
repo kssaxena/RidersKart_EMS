@@ -131,7 +131,10 @@ const EmployeeSearch = () => {
       <div className="flex flex-col justify-center items-center w-full gap-5">
         {CardData?.length > 0
           ? CardData?.map((data, key) => (
-              <Link className="flex justify-between items-center w-full shadow-2xl bg-neutral-100 rounded-xl p-5 text-sm">
+              <Link
+                to={`/employees/current-employee/${data?._id}`}
+                className="flex justify-between items-center w-full shadow-2xl bg-neutral-100 rounded-xl p-5 text-sm"
+              >
                 <div className="flex flex-col justify-start items-start w-1/2">
                   <h1 className="text-center font-semibold text-red-500">
                     <strong>Employee ID</strong> {data?.employeeId}
@@ -162,7 +165,7 @@ const EmployeeSearch = () => {
                   <h1>
                     <strong>Department</strong> {data?.department}
                   </h1>
-                  <h1 className="text-center font-semibold">
+                  {/* <h1 className="text-center font-semibold">
                     {data?.isActive === true ? (
                       <p className="text-green-600 bg-green-200 text-center px-2 py-1">
                         ONLINE
@@ -172,7 +175,7 @@ const EmployeeSearch = () => {
                         OFFLINE
                       </p>
                     )}
-                  </h1>
+                  </h1> */}
                 </div>
               </Link>
             ))
