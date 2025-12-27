@@ -39,7 +39,7 @@ const EmployeeRegistrationForm = ({ startLoading, stopLoading }) => {
 
     try {
       startLoading();
-      if (user.role === "ADMIN") {
+      if (user.role === "Admin") {
         const response = await FetchData(
           "admin/register-employee",
           "post",
@@ -48,14 +48,14 @@ const EmployeeRegistrationForm = ({ startLoading, stopLoading }) => {
         // console.log(response);
       } else {
         const response = await FetchData(
-          "/head/register-employee",
+          "head/register-employee",
           "post",
           data
         );
         // console.log(response);
       }
       alert("Employee Registered Successfully");
-      if (user.role === "ADMIN") {
+      if (user.role === "Admin") {
         navigate("/admin/dashboard");
       } else {
         navigate("/head/dashboard");
@@ -69,7 +69,7 @@ const EmployeeRegistrationForm = ({ startLoading, stopLoading }) => {
     }
   };
 
-  return (user && user?.role === "ADMIN") || user?.role === "HEAD" ? (
+  return (user && user?.role === "Admin") || user?.role === "Head" ? (
     <form
       ref={formRef}
       onSubmit={handleSubmit}
@@ -96,7 +96,7 @@ const EmployeeRegistrationForm = ({ startLoading, stopLoading }) => {
       </div>
 
       <div className="flex justify-center items-center gap-5">
-        {user?.role === "ADMIN" ? (
+        {user?.role === "Admin" ? (
           <Button
             label="Cancel"
             type="reset"

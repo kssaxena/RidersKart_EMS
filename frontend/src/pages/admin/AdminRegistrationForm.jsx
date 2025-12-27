@@ -36,7 +36,7 @@ const AdminRegistrationForm = ({ startLoading, stopLoading }) => {
       stopLoading();
     }
   };
-  return user && user?.role === "ADMIN" ? (
+  return user && user?.role === "Admin" ? (
     <form
       ref={formRef}
       onSubmit={handleSubmit}

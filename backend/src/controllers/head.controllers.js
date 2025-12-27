@@ -5,9 +5,10 @@ import { Head } from "../models/head.models.js";
 import { Employee } from "../models/employee.models.js";
 import { generateAccessAndRefreshTokens } from "../utils/TokenGenerator.js";
 import Jwt from "jsonwebtoken";
+import { generateUniqueEmployeePin } from "../utils/UniquePinEmployee.js";
 
 /* =======================
-   HEAD LOGIN
+   Head LOGIN
 ======================= */
 const loginHead = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -28,7 +29,7 @@ const loginHead = asyncHandler(async (req, res) => {
 
   const { AccessToken, RefreshToken } = await generateAccessAndRefreshTokens(
     head._id,
-    "HEAD"
+    "Head"
   );
 
   return res.status(200).json(
@@ -43,25 +44,49 @@ const loginHead = asyncHandler(async (req, res) => {
 });
 
 /* =======================
-   REGISTER EMPLOYEE (HEAD)
+   REGISTER EMPLOYEE (Head)
 ======================= */
 const registerEmployeeByHead = asyncHandler(async (req, res, next) => {
   const headId = req.user._id;
 
-  const { name, employeeId, designation, department, pincode } = req.body;
+  const {
+    name,
+    employeeId,
+    designation,
+    department,
+    phoneNumber,
+    officeLocation,
+    pincode,
+    email,
+  } = req.body;
 
-  if (!name || !employeeId || !designation || !department || !pincode) {
-    return next(new ApiError(400, "All fields are required"));
+  if (
+    !name ||
+    !employeeId ||
+    !designation ||
+    !department ||
+    !phoneNumber ||
+    !officeLocation ||
+    !pincode ||
+    !email
+  ) {
+    throw new ApiError(400, "All fields are required");
   }
+
+  const accessPin = await generateUniqueEmployeePin();
 
   const employee = await Employee.create({
     name,
     employeeId,
     designation,
     department,
+    phoneNumber,
+    email,
+    officeLocation,
     pincode,
-    reportingAuthority: headId,
-    createdBy: "HEAD",
+    reportingAuthority: headId, // 👈 Head is authority
+    accessPin,
+    createdBy: "Head",
     createdById: headId,
   });
 
@@ -70,22 +95,22 @@ const registerEmployeeByHead = asyncHandler(async (req, res, next) => {
     $inc: { "stats.totalEmployees": 1 },
   });
 
-  res
+  return res
     .status(201)
     .json(new ApiResponse(201, employee, "Employee registered successfully"));
 });
 
 /* =======================
-   HEAD DASHBOARD
+   Head DASHBOARD
 ======================= */
 const getHeadDashboard = asyncHandler(async (req, res) => {
   const head = await Head.findById(req.user._id).populate(
     "createdEmployees",
-    "name employeeId designation email"
+    "name employeeId designation email isActive"
   );
 
   const allEmployee = await Employee.find().select(
-    "name employeeId designation email"
+    "name employeeId designation email isActive"
   );
 
   res.status(200).json(new ApiResponse(200, { head, allEmployee }));
@@ -105,7 +130,7 @@ const regenerateHeadRefreshToken = asyncHandler(async (req, res) => {
 
   const { AccessToken, RefreshToken } = await generateAccessAndRefreshTokens(
     head._id,
-    "HEAD"
+    "Head"
   );
 
   return res

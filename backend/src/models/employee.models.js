@@ -52,14 +52,23 @@ const employeeSchema = new mongoose.Schema(
     /* 🔥 WHO CREATED THIS EMPLOYEE */
     createdBy: {
       type: String,
-      enum: ["ADMIN", "HEAD"],
+      enum: ["Admin", "Head"],
       required: true,
     },
 
     createdById: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "Admin",
+      ref: "createdBy",
+    },
+
+    accessPin: {
+      type: Number,
+      required: true,
+      unique: true,
+      index: true,
+      min: 100000,
+      max: 999999,
     },
 
     isActive: {

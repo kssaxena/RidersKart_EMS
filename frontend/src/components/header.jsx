@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import Button from "./Button";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/Logo.png";
 
 const Header = () => {
@@ -19,12 +19,18 @@ const Header = () => {
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-4">
           {user ? (
-            <span className="text-gray-700">
-              Welcome, {user.name}{" "}
+            <Link
+              to={`/${user?.role}/dashboard`}
+              className="bg-[#DF3F33] px-4 py-2 rounded-2xl drop-shadow-xl hover:scale-105 hover:drop-shadow-2xl transition duration-150 ease-in-out text-white "
+            >
+              {window.location.pathname === "/"
+                ? "Go to Dashboard"
+                : `Welcome ${user.name}`}
+              ,{" "}
               <span className="bg-green-200 font-bold text-green-700 text-xs p-1 ">
                 {user.role}
               </span>{" "}
-            </span>
+            </Link>
           ) : (
             <Button label="Login" onClick={() => navigate("/login")} />
           )}

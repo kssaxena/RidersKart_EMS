@@ -44,7 +44,7 @@ const Login = () => {
       ) : (
         <div className="shadow-xl rounded-2xl w-full max-w-md p-6">
           Toggle Buttons
-          {user?.role === "ADMIN" ? (
+          {user?.role === "Admin" ? (
             <Button
               label={"Go to dashboard"}
               onClick={() => navigate("/admin/dashboard")}

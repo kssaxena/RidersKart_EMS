@@ -46,8 +46,8 @@ const headSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["HEAD"],
-      default: "HEAD",
+      enum: ["Head"],
+      default: "Head",
     },
 
     createdByAdmin: {

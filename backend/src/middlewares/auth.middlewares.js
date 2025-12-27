@@ -5,7 +5,7 @@ import { Admin } from "../models/admin.models.js";
 import { Head } from "../models/head.models.js";
 
 /* =========================
-   VERIFY ADMIN
+   VERIFY Admin
 ========================= */
 const VerifyAdmin = asyncHandler(async (req, _, next) => {
   try {
@@ -26,7 +26,7 @@ const VerifyAdmin = asyncHandler(async (req, _, next) => {
     }
 
     req.user = admin;
-    req.role = "ADMIN";
+    req.role = "Admin";
     next();
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid access token");
@@ -34,7 +34,7 @@ const VerifyAdmin = asyncHandler(async (req, _, next) => {
 });
 
 /* =========================
-   VERIFY HEAD
+   VERIFY Head
 ========================= */
 const VerifyHead = asyncHandler(async (req, _, next) => {
   try {
@@ -59,7 +59,7 @@ const VerifyHead = asyncHandler(async (req, _, next) => {
     }
 
     req.user = head;
-    req.role = "HEAD";
+    req.role = "Head";
     next();
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid access token");
@@ -67,7 +67,7 @@ const VerifyHead = asyncHandler(async (req, _, next) => {
 });
 
 /* =========================
-   ADMIN OR HEAD
+   Admin OR Head
 ========================= */
 const VerifyAdminOrHead = asyncHandler(async (req, _, next) => {
   try {

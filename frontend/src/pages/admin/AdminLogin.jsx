@@ -28,13 +28,13 @@ const AdminLogin = ({ startLoading, stopLoading }) => {
 
         localStorage.setItem("AccessToken", tokens.AccessToken);
         localStorage.setItem("RefreshToken", tokens.RefreshToken);
-        localStorage.setItem("role", "ADMIN");
+        localStorage.setItem("role", "Admin");
 
         dispatch(clearUser());
         dispatch(
           addUser({
             user: admin,
-            role: "ADMIN",
+            role: "Admin",
           })
         );
 

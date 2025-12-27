@@ -28,8 +28,8 @@ function App() {
       try {
         let endpoint = "";
 
-        if (role === "ADMIN") endpoint = "admin/refresh-tokens";
-        else if (role === "HEAD") endpoint = "head/refresh-tokens";
+        if (role === "Admin") endpoint = "admin/refresh-tokens";
+        else if (role === "Head") endpoint = "head/refresh-tokens";
 
         const res = await FetchData(endpoint, "post", {
           RefreshToken,
@@ -72,7 +72,7 @@ function App() {
             element={<EmployeeDetails />}
           />
 
-          {/* ================= ADMIN ================= */}
+          {/* ================= Admin ================= */}
           <Route
             path="/admin/register-admin"
             element={<AdminRegistrationForm />}
@@ -87,7 +87,7 @@ function App() {
             element={<EmployeeRegistrationForm />}
           />
 
-          {/* ================= HEAD ================= */}
+          {/* ================= Head ================= */}
           {/* <Route path="/head/login" element={<HeadLogin />} /> */}
           <Route path="/head/dashboard" element={<HeadDashboard />} />
           <Route

@@ -6,6 +6,7 @@ import { Head } from "../models/head.models.js";
 import { Employee } from "../models/employee.models.js";
 import { generateAccessAndRefreshTokens } from "../utils/TokenGenerator.js";
 import Jwt from "jsonwebtoken";
+import { generateUniqueEmployeePin } from "../utils/UniquePinEmployee.js";
 
 const regenerateAdminRefreshToken = asyncHandler(async (req, res) => {
   const token = req.body.RefreshToken;
@@ -19,7 +20,7 @@ const regenerateAdminRefreshToken = asyncHandler(async (req, res) => {
 
   const { AccessToken, RefreshToken } = await generateAccessAndRefreshTokens(
     admin._id,
-    "ADMIN"
+    "Admin"
   );
 
   return res.status(201).json(
@@ -75,7 +76,7 @@ const registerAdmin = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(201, adminData, "Admin registered successfully"));
 });
 /* =======================
-   ADMIN LOGIN
+   Admin LOGIN
 ======================= */
 const loginAdmin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -92,7 +93,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
   const { AccessToken, RefreshToken } = await generateAccessAndRefreshTokens(
     admin._id,
-    "ADMIN"
+    "Admin"
   );
 
   return res.status(200).json(
@@ -107,7 +108,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 });
 
 /* =======================
-   REGISTER HEAD (ADMIN)
+   REGISTER Head (Admin)
 ======================= */
 const registerHead = asyncHandler(async (req, res, next) => {
   const adminId = req.user._id;
@@ -141,7 +142,7 @@ const registerHead = asyncHandler(async (req, res, next) => {
     !department ||
     !password
   ) {
-    return next(new ApiError(400, "All fields are required"));
+    return new ApiError(400, "All fields are required");
   }
 
   const existing = await Head.findOne({ email });
@@ -170,7 +171,7 @@ const registerHead = asyncHandler(async (req, res, next) => {
 });
 
 /* =======================
-   REGISTER EMPLOYEE (ADMIN)
+   REGISTER EMPLOYEE (Admin)
 ======================= */
 const registerEmployeeByAdmin = asyncHandler(async (req, res, next) => {
   const adminId = req.user._id;
@@ -198,8 +199,10 @@ const registerEmployeeByAdmin = asyncHandler(async (req, res, next) => {
     !reportingAuthority ||
     !email
   ) {
-    return next(new ApiError(400, "All fields are required"));
+    throw new ApiError(400, "All fields are required");
   }
+
+  const accessPin = await generateUniqueEmployeePin();
 
   const employee = await Employee.create({
     name,
@@ -211,7 +214,8 @@ const registerEmployeeByAdmin = asyncHandler(async (req, res, next) => {
     officeLocation,
     pincode,
     reportingAuthority,
-    createdBy: "ADMIN",
+    accessPin,
+    createdBy: "Admin",
     createdById: adminId,
   });
 
@@ -220,23 +224,25 @@ const registerEmployeeByAdmin = asyncHandler(async (req, res, next) => {
     $inc: { "stats.totalEmployees": 1 },
   });
 
-  res
+  return res
     .status(201)
     .json(new ApiResponse(201, employee, "Employee registered successfully"));
 });
 
 /* =======================
-   ADMIN DASHBOARD
+   Admin DASHBOARD
 ======================= */
 const getAdminDashboard = asyncHandler(async (req, res) => {
   const admin = await Admin.findById(req.user._id)
-    .populate("createdHeads", "name employeeId designation email")
-    .populate("createdEmployees", "name employeeId designation email");
+    .populate("createdHeads", "name employeeId designation email isActive")
+    .populate("createdEmployees", "name employeeId designation email isActive");
   // .populate("createdEmployees", "name employeeId designation");
 
-  const allHead = await Head.find().select("name employeeId designation email");
+  const allHead = await Head.find().select(
+    "name employeeId designation email isActive"
+  );
   const allEmployee = await Employee.find().select(
-    "name employeeId designation email"
+    "name employeeId designation email isActive"
   );
 
   res.status(200).json(new ApiResponse(200, { admin, allHead, allEmployee }));

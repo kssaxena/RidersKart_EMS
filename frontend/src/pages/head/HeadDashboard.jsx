@@ -54,7 +54,13 @@ const HeadDashboard = ({ startLoading, stopLoading }) => {
   };
 
   const DataUI = ({ Text = "", TableData }) => {
-    const TableHeaders = ["Employee ID", "Name", "Email", "Designation"];
+    const TableHeaders = [
+      "Employee ID",
+      "Name",
+      "Email",
+      "Designation",
+      "Status",
+    ];
     return (
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-6">{Text}</h2>
@@ -81,8 +87,8 @@ const HeadDashboard = ({ startLoading, stopLoading }) => {
                   >
                     <td className="px-5 py-3 text-red-500 font-medium">
                       <Link
-                        to={`/current-data/${data._id}`}
-                        className="hover:underline"
+                        to={`/employees/current-employee/${data._id}`}
+                        className="hover:underline text-blue-500"
                       >
                         {data?.employeeId}
                       </Link>
@@ -91,6 +97,19 @@ const HeadDashboard = ({ startLoading, stopLoading }) => {
                     <td className="px-5 py-3 text-gray-700">{data?.email}</td>
                     <td className="px-5 py-3 text-gray-700">
                       {data?.designation}
+                    </td>
+                    <td>
+                      <h1 className="text-center font-semibold">
+                        {data?.isActive === true ? (
+                          <p className="text-green-600 bg-green-200 text-center px-2 py-1 w-fit">
+                            Active
+                          </p>
+                        ) : (
+                          <p className="text-red-600 bg-red-200 text-center w-fit">
+                            Inactive
+                          </p>
+                        )}
+                      </h1>
                     </td>
                   </tr>
                 ))
@@ -127,7 +146,7 @@ const HeadDashboard = ({ startLoading, stopLoading }) => {
     { label: "Your Admin email", value: admin?.email },
   ];
 
-  return user && user?.role === "HEAD" ? (
+  return user && user?.role === "Head" ? (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">

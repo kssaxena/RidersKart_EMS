@@ -52,13 +52,7 @@ const EmployeeSearch = () => {
   // console.log(results);
 
   const ResultDataTableUI = ({ Text = "", TableData }) => {
-    const TableHeaders = [
-      "Employee ID",
-      "Name",
-      "Email",
-      "Designation",
-      "Status",
-    ];
+    const TableHeaders = ["Employee ID", "Name", "Email", "Designation"];
     return (
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-6">{Text}</h2>
@@ -85,7 +79,7 @@ const EmployeeSearch = () => {
                   >
                     <td className="px-5 py-3 text-red-500 font-medium">
                       <Link
-                        to={`/current-data/${data._id}`}
+                        to={`/employees/current-employee/${data?._id}`}
                         className="hover:underline"
                       >
                         {data?.employeeId}
@@ -96,7 +90,7 @@ const EmployeeSearch = () => {
                     <td className="px-5 py-3 text-gray-700">
                       {data?.designation}
                     </td>
-                    <td className="px-5 py-3 text-gray-700">
+                    {/* <td className="px-5 py-3 text-gray-700">
                       {data?.isActive === true ? (
                         <h1 className="text-green-600 bg-green-200 text-center">
                           ONLINE
@@ -106,7 +100,7 @@ const EmployeeSearch = () => {
                           OFFLINE
                         </h1>
                       )}
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               ) : (
@@ -202,8 +196,8 @@ const EmployeeSearch = () => {
       {/* Loading */}
       {loading && <p className="mt-4 text-gray-500">Searching employees...</p>}
       <h2 className="font-bold mb-6">Search results</h2>
-      {/* <ResultDataTableUI TableData={results} /> */}
-      <Cards CardData={results} />
+      <ResultDataTableUI TableData={results} />
+      {/* <Cards CardData={results} /> */}
     </div>
   );
 };

@@ -27,19 +27,19 @@ const HeadLogin = ({ startLoading, stopLoading }) => {
 
         localStorage.setItem("AccessToken", tokens.AccessToken);
         localStorage.setItem("RefreshToken", tokens.RefreshToken);
-        localStorage.setItem("role", "HEAD");
+        localStorage.setItem("role", "Head");
 
         dispatch(clearUser());
         dispatch(
           addUser({
             user: head,
-            role: "HEAD",
+            role: "Head",
           })
         );
 
         navigate("/head/dashboard");
 
-        localStorage.setItem("role", "HEAD");
+        localStorage.setItem("role", "Head");
         navigate("/head/dashboard");
       }
     } catch (err) {

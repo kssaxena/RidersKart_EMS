@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: null, // admin / head data
-  role: null, // "ADMIN" | "HEAD" | null
+  role: null, // "Admin" | "Head" | null
   isAuthenticated: false,
   isAuthLoading: true,
 };

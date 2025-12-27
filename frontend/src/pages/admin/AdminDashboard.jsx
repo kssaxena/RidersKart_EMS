@@ -56,7 +56,13 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
   ];
 
   const HeadDataUI = ({ Text = "", TableData, Role = "" }) => {
-    const TableHeaders = ["Employee ID", "Name", "Email", "Designation"];
+    const TableHeaders = [
+      "Employee ID",
+      "Name",
+      "Email",
+      "Designation",
+      "Status",
+    ];
     return (
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-6">{Text}</h2>
@@ -82,7 +88,7 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
                     className="hover:bg-gray-50 transition-colors duration-200 border-b"
                   >
                     <td className="px-5 py-3 text-red-500 font-medium">
-                      {Role === "HEAD" ? (
+                      {Role === "Head" ? (
                         <h1 className="hover:underline">{data?.employeeId}</h1>
                       ) : (
                         // <Link
@@ -111,6 +117,19 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
                     <td className="px-5 py-3 text-gray-700">
                       {data?.designation}
                     </td>
+                    <td>
+                      <h1 className="text-center font-semibold">
+                        {data?.isActive === true ? (
+                          <p className="text-green-600 bg-green-200 text-center px-2 py-1 w-fit">
+                            Active
+                          </p>
+                        ) : (
+                          <p className="text-red-600 bg-red-200 text-center w-fit">
+                            Inactive
+                          </p>
+                        )}
+                      </h1>
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -130,7 +149,7 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
     );
   };
 
-  return user && user?.role === "ADMIN" ? (
+  return user && user?.role === "Admin" ? (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
       <div className="flex md:flex-row flex-col md:w-1/2 w-full justify-around md:items-center items-start shadow-2xl p-5 rounded-xl bg-neutral-200">
@@ -157,8 +176,8 @@ const AdminDashboard = ({ startLoading, stopLoading }) => {
           />
         </div>
       </div>
-      <HeadDataUI TableData={headData} Text="Your created HODs" Role="HEAD" />
-      <HeadDataUI TableData={allHeadData} Text="All HODs" Role="HEAD" />
+      <HeadDataUI TableData={headData} Text="Your created HODs" Role="Head" />
+      <HeadDataUI TableData={allHeadData} Text="All HODs" Role="Head" />
       <HeadDataUI TableData={employeeData} Text="Your created employees" />
       <HeadDataUI TableData={allEmployeeData} Text="All employees" />
     </div>
